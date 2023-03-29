@@ -29,13 +29,14 @@ Artisan::command('save_e5', function () {
 Artisan::command('sync_drive', function () {
     $alist = new \App\Models\Alist();
     $storages = $alist->storages;
-    $arr = $storages->keyBy('mount_path');
+    $arr = $storages->where('driver', 'OnedriveAPP')->keyBy('addition.email');
     $sync_users = \App\Models\TenantUser::with('tenant')->whereNotNull('drive_id')->get();
     foreach ($sync_users as $sync_user) {
+        $user = $sync_user->json['userPrincipalName'];
         $path = "/onedrive/{$sync_user->json['userPrincipalName']}";
         /** @var \App\Models\Storage $storage */
-        if ($arr->has($path)) {
-            $storage = $arr->get($path);
+        if ($arr->has($user)) {
+            $storage = $arr->get($user);
             $storage->alist = $alist;
             $addition = [];
             $addition['root_folder_path'] = '/';
@@ -46,20 +47,6 @@ Artisan::command('sync_drive', function () {
             $addition['email'] = $sync_user->json['userPrincipalName'];
             $addition['chunk_size'] = 5;
             $storage->addition = $addition;
-            $storage->cache_expiration = 30;
-            $storage->disabled = false;
-            $storage->down_proxy_url = "";
-            $storage->driver = "OnedriveAPP";
-            $storage->enable_sign = false;
-            $storage->extract_folder = "";
-            $storage->mount_path = $path;
-            $storage->order = 0;
-            $storage->order_by = "";
-            $storage->order_direction = "";
-            $storage->remark = "";
-            $storage->status = "work";
-            $storage->web_proxy = false;
-            $storage->webdav_policy = "302_redirect";
             $storage->save();
         } else {
             $storage = new \App\Models\Storage();
