@@ -102,7 +102,6 @@ class Tenant extends Model
             }
             $password = new PasswordCredential();
             $password->setStartDateTime(now());
-            $password->setEndDateTime("9999-12-31T23:59:59Z");
             $password_model = $graph->createRequest("POST", "/applications/{$this->sync_app_id}/addPassword")
                 ->attachBody($password)
                 ->setReturnType(PasswordCredential::class)

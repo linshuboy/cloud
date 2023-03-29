@@ -10,20 +10,28 @@
 <body>
 <form action="{{route('onedrive.app.init')}}">
     <div>
-        初始化Onedrive:
-        <input type="checkbox" name="init_onedrive" value="1" checked>
+        <label>
+            初始化Onedrive:
+            <input type="checkbox" name="init_onedrive" value="1" checked>
+        </label>
     </div>
     <div>
-        <div style="color: red">删除所有onedrive_作为开头的用户(只有在初始化Onedrive时才会生效)危险操作后果自负):</div>
-        <input type="checkbox" name="delete_user" value="1">
+        <label>
+            <span style="color: red">删除所有onedrive_作为开头的用户(只有在初始化Onedrive时才会生效)危险操作后果自负):</span>
+            <input type="checkbox" name="delete_user" value="1">
+        </label>
     </div>
     <div>
-        取消所有用户的E5许可(只有在初始化Onedrive时才会生效)):
-        <input type="checkbox" name="cancel_permission" value="1">
+        <label>
+            取消所有用户的E5许可(只有在初始化Onedrive时才会生效)):
+            <input type="checkbox" name="cancel_permission" value="1">
+        </label>
     </div>
     <div>
-        E5保活:
-        <input type="checkbox" name="save_e5" value="1" checked>
+        <label>
+            E5保活:
+            <input type="checkbox" name="save_e5" value="1" checked>
+        </label>
     </div>
     <button>开始</button>
 </form>

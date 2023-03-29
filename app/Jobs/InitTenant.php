@@ -47,9 +47,9 @@ class InitTenant implements ShouldQueue
             echo 'delete_user: ' . $delete_user . PHP_EOL;
             echo 'cancel_permission: ' . $cancel_permission . PHP_EOL;
             echo 'save_e5: ' . $save_e5 . PHP_EOL;
-            if ($tenant->save_e5 == 0 && $save_e5) {
-                // $tenant->intiDefaultDomain();
-            }
+            // if ($tenant->save_e5 == 0 && $save_e5) {
+            //     // $tenant->intiDefaultDomain();
+            // }
             if ($tenant->init_onedrive == 0 && $init_onedrive) {
                 InitUserAuthorization::dispatch($tenant->tenant_id);
                 $delete_user && $tenant->deleteAllUser();
