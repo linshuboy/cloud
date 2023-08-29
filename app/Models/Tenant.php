@@ -615,6 +615,9 @@ class Tenant extends Model
                 ->execute();
         }
         echo "分配权限" . PHP_EOL;
+        $resourceId = $graph->createRequest("GET", "/servicePrincipals(appId='00000003-0000-0000-c000-000000000000')")
+            ->setReturnType(ServicePrincipal::class)
+            ->execute()->getId();
         foreach ($resources as $resource) {
             if ($resource['type'] == 'Scope') {
                 continue;
@@ -623,7 +626,7 @@ class Tenant extends Model
             $appRoleAssignment->setAppRoleId($resource['id']);
             $appRoleAssignment->setPrincipalId($servicePrincipal->getId());
             $appRoleAssignment->setPrincipalDisplayName($servicePrincipal->getDisplayName());
-            $appRoleAssignment->setResourceId('8f197849-08a0-40be-9065-89a39767d673');
+            $appRoleAssignment->setResourceId($resourceId);
             $graph->createRequest("POST", "/servicePrincipals(appId='{$sync_client_id}')/appRoleAssignments")
                 ->attachBody($appRoleAssignment)
                 ->execute();
@@ -634,7 +637,7 @@ class Tenant extends Model
                     ->attachBody([
                         'clientId' => $servicePrincipal->getId(),
                         'consentType' => 'AllPrincipals',
-                        'resourceId' => '8f197849-08a0-40be-9065-89a39767d673',
+                        'resourceId' => $resourceId,
                         'scope' => 'Mail.ReadBasic Mail.Read User.Read Mail.Send Files.Read Files.Read.All',
                     ])
                     ->setReturnType(OAuth2PermissionGrant::class)
