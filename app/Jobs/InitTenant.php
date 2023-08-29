@@ -17,6 +17,8 @@ class InitTenant implements ShouldQueue
     protected $tenant_id;
     protected $status;
 
+    public $timeout = 3600;
+
     /**
      * Create a new job instance.
      */
