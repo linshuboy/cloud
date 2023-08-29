@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\OnedriveController;
 use App\Models\Tenant;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Microsoft\Graph\Graph;

@@ -3,6 +3,7 @@
 use App\Models\Tenant;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +19,54 @@ use Illuminate\Support\Facades\Artisan;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
+Artisan::command('sync_rclone', function () {
+    $users = \App\Models\TenantUser::with(['tenant'])->get();
+    $newTokens = [];
+    $tokenStr = '{"access_token": "a","token_type":"Bearer","refresh_token":"b","expiry":"2023-08-15T17:14:34.3850334+08:00"}';
+    $str = '';
+    $drives = [];
+    if (file_exists(base_path().'/rclone.conf')){
+        $oldStr = file_get_contents(base_path().'/rclone.conf');
+        $arr = parse_ini_string($oldStr,true,INI_SCANNER_RAW);
+        foreach ($arr as $key => $value) {
+            if ($value['type'] != 'onedrive')continue;
+            $user = \App\Models\TenantUser::with(['tenant'])->where('drive_id',$value['drive_id'])->first();
+            $token = json_decode($value['token'],true);
+            $expiry = $token['expiry'];
+            $expiry_time = Carbon\Carbon::parse($expiry);
+            if ($expiry_time->lte(now())){
+                $newToken = $newTokens[$user->tenant->tenant_id] ?? $user->tenant->accessToken(true);
+                $newTokens[$user->tenant->tenant_id] = $newToken;
+                $token['access_token'] = $newToken;
+                $token['expiry'] = Cache::get('token_expires_in_'. $user->tenant->tenant_id)->format('Y-m-d\TH:i:s.uP');
+                $arr[$key]['token'] = json_encode($token);
+            }
+        }
+        foreach ($arr as $key => $value) {
+            $str .= "[$key]\n";
+            foreach ($value as $k => $v) {
+                $str .= "$k = $v\n";
+            }
+        }
+        $drives = array_column($arr,'drive_id');
+    }
+    foreach ($users as $user) {
+        if (in_array($user->drive_id,$drives))continue;
+        $newToken = $newTokens[$user->tenant->tenant_id] ?? $user->tenant->accessToken(true);
+        $newTokens[$user->tenant->tenant_id] = $newToken;
+        $token = json_decode($tokenStr,true);
+        $token['access_token'] = $newToken;
+        $token['expiry'] = Cache::get('token_expires_in_'. $user->tenant->tenant_id)->format('Y-m-d\TH:i:s.uP');
+        $str .= "[$user->user_id]\n";
+        $str .= "type = onedrive\n";
+        $str .= "drive_id = $user->drive_id\n";
+        $str .= "drive_type = business\n";
+        $str .= "client_id = ".config('microsoft.microsoft_client_id')."\n";
+        $str .= "client_secret = ".config('microsoft.microsoft_client_secret')."\n";
+        $str .= "token = ".json_encode($token)."\n";
+    }
+    file_put_contents(base_path().'/rclone.conf',$str);
+});
 Artisan::command('save_e5', function () {
     $tenants = Tenant::where('save_e5', 1)->get();
     foreach ($tenants as $tenant) {

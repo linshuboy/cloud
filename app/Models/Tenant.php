@@ -61,6 +61,7 @@ class Tenant extends Model
                 ],
             ])->getBody()->getContents());
             cache(["token_{$this->tenant_id}" => $token->access_token], now()->addSeconds($token->expires_in - 300));
+            cache(["token_expires_in_{$this->tenant_id}" => now()->addSeconds($token->expires_in - 300)], now()->addSeconds($token->expires_in - 300));
         }
         return cache("token_{$this->tenant_id}");
     }
