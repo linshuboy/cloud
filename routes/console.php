@@ -25,8 +25,8 @@ Artisan::command('sync_rclone', function () {
     $tokenStr = '{"access_token": "a","token_type":"Bearer","refresh_token":"b","expiry":"2023-08-15T17:14:34.3850334+08:00"}';
     $str = '';
     $drives = [];
-    if (file_exists(base_path().'/rclone.conf')){
-        $oldStr = file_get_contents(base_path().'/rclone.conf');
+    if (file_exists('rclone.conf')){
+        $oldStr = file_get_contents('rclone.conf');
         $arr = parse_ini_string($oldStr,true,INI_SCANNER_RAW);
         foreach ($arr as $key => $value) {
             if ($value['type'] != 'onedrive')continue;
@@ -57,7 +57,7 @@ Artisan::command('sync_rclone', function () {
         $token = json_decode($tokenStr,true);
         $token['access_token'] = $newToken;
         $token['expiry'] = Cache::get('token_expires_in_'. $user->tenant->tenant_id)->format('Y-m-d\TH:i:s.uP');
-        $str .= "[$user->user_id]\n";
+        $str .= "[onedrive{$user->id}]\n";
         $str .= "type = onedrive\n";
         $str .= "drive_id = $user->drive_id\n";
         $str .= "drive_type = business\n";
@@ -65,7 +65,7 @@ Artisan::command('sync_rclone', function () {
         $str .= "client_secret = ".config('microsoft.microsoft_client_secret')."\n";
         $str .= "token = ".json_encode($token)."\n";
     }
-    file_put_contents(base_path().'/rclone.conf',$str);
+    file_put_contents('rclone.conf',$str);
 });
 Artisan::command('save_e5', function () {
     $tenants = Tenant::where('save_e5', 1)->get();
