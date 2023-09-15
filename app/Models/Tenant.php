@@ -28,6 +28,7 @@ use Microsoft\Graph\Model\OAuth2PermissionGrant;
  * @property mixed $tenant_id
  * @property Collection $json
  * @property mixed $init_onedrive
+ * @method static where(string $string, int $int)
  */
 class Tenant extends Model
 {

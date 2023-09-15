@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('user_id')->default('');
             $table->string('tenant_id')->default('');
-            $table->string('json')->default('');
+            $table->text('json');
             $table->string('password')->default('');
             $table->string('drive_id')->default('');
             $table->timestamps();

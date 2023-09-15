@@ -43,6 +43,14 @@ return [
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
         ],
 
+        'xiaoya' => [
+            'driver' => 'sqlite',
+            'url' => env('DATABASE_URL'),
+            'database' => env('DB_DATABASE_PATH', database_path('data.db')),
+            'prefix' => 'x_',
+            'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
+        ],
+
         'alist_sqlite' => [
             'driver' => 'sqlite',
             'url' => env('DATABASE_URL'),
