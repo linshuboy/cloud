@@ -10,6 +10,7 @@ use Microsoft\Graph\Model\OAuth2PermissionGrant;
 
 /**
  * @property mixed $share_id
+ * @property mixed $password
  */
 class AliDiskShare extends Model
 {
@@ -26,6 +27,7 @@ class AliDiskShare extends Model
                 ],
                 'json' => [
                     'share_id' => $this->share_id,
+                    'share_pwd' => $this->password,
                 ],
             ])->getBody()->getContents());
             cache(["aliyunpansharetoken:".$this->share_id => $list->share_token], $list->expires_in - 300);

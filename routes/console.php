@@ -1,10 +1,14 @@
 <?php
 
+use App\Jobs\CreateAliDiskIndex;
 use App\Models\AliDisk;
 use App\Models\AliDiskShare;
 use App\Models\Tenant;
+use GuzzleHttp\Exception\ClientException;
+use Illuminate\Bus\Batch;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
 
 /*
@@ -141,28 +145,27 @@ Artisan::command('update_alipan_token', function () {
     $alipan->login_token;
 });
 Artisan::command('test', function () {
-    $guzzle = new \GuzzleHttp\Client();
+    $guzzle = new \GuzzleHttp\Client(['verify' => false]);
     $alipan = (new AliDisk());
     $token1 = $alipan->token;
     $token_s = $alipan->login_token;
     $d = config('aliyun.device_id');
-    $alipan_share = AliDiskShare::where('share_id', '2Sd3Yb4gZAn')->first();
-    $list = json_decode($guzzle->post("https://api.aliyundrive.com/adrive/v2/file/list_by_share", [
-        'headers' => [
-            'X-Canary' => 'client=web,app=share,version=v2.3.1',
-            'X-Device-Id' => cache('aliyun.device_id'),
-            'X-Share-Token' => $alipan_share->share_token,
-        ],
-        'json' => [
-            'limit' => 100,
-            'order_by' => 'name',
-            'order_direction' => 'DESC',
-            'parent_file_id' => '641ee3d02510909fd75842a681ec3da5c53a0518',
-            'share_id' => $alipan_share->share_id,
-            'marker' => "WyI2NDFlZTNkMDI1MTA5MDlmZDc1ODQyYTY4MWVjM2RhNWM1M2EwNTE4IiwibiIsIm4iLDEsLTEsIlkg5byC56eNIDRLIOadnOavlOinhueVjCIsIjY0MWVkZTkwNDAxYzJmMTA1MWY1NGYwY2IyYTI0OGY2YzM3ZjNmYWIiXQ==",
-        ],
-    ])->getBody()->getContents());
-    dd($list);
+
+
+    $fp = fopen(base_path().'/title.basics.tsv','r');
+    $count = 0;
+    $mcount = 0;
+    $p1 = [];
+    while (!feof($fp)) {
+        $str = fgets($fp);
+        $pieces = explode("\t", $str);
+        if (($pieces[1]??'') == 'movie'){
+            $mcount++;
+        }
+        $count++;
+    }
+    print_r($count);
+    print_r($mcount);
     //https://api.aliyundrive.com/adrive/v2/batch
     // {"requests":[{"body":{"file_id":"641575451eb3dce03ee54444b23034f342616d4e","share_id":"2Sd3Yb4gZAn","auto_rename":true,"to_parent_file_id":"root","to_drive_id":"888338282"},"headers":{"Content-Type":"application/json"},"id":"0","method":"POST","url":"/file/copy"}],"resource":"file"}
 //    $a = json_decode($guzzle->post("https://api.aliyundrive.com/adrive/v2/batch", [

@@ -18,6 +18,7 @@ class AliDiskShareFile extends Model
         'size',
         'drive_id',
         'domain_id',
+        'share_id',
         'file_id',
         'type',
         'parent_file_id'];
