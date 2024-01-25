@@ -3,6 +3,7 @@
 use App\Jobs\CreateAliDiskIndex;
 use App\Models\AliDisk;
 use App\Models\AliDiskShare;
+use App\Models\AliDiskShareFile;
 use App\Models\Tenant;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Bus\Batch;
@@ -150,71 +151,27 @@ Artisan::command('test', function () {
     $token1 = $alipan->token;
     $token_s = $alipan->login_token;
     $d = config('aliyun.device_id');
-
-
-    $fp = fopen(base_path().'/title.basics.tsv','r');
-    $count = 0;
-    $mcount = 0;
-    $p1 = [];
-    while (!feof($fp)) {
-        $str = fgets($fp);
-        $pieces = explode("\t", $str);
-        if (($pieces[1]??'') == 'movie'){
-            $mcount++;
-        }
-        $count++;
+    $file = AliDiskShareFile::where('id', '570856')->first();
+    $time1 = Carbon\Carbon::create('2023','10','06','21','21','00');
+    $time2 = Carbon\Carbon::create('2023','09','28','07','05','00');
+    if($time1->gt($time2)){
+        $time1 = $time2;
     }
-    print_r($count);
-    print_r($mcount);
-    //https://api.aliyundrive.com/adrive/v2/batch
-    // {"requests":[{"body":{"file_id":"641575451eb3dce03ee54444b23034f342616d4e","share_id":"2Sd3Yb4gZAn","auto_rename":true,"to_parent_file_id":"root","to_drive_id":"888338282"},"headers":{"Content-Type":"application/json"},"id":"0","method":"POST","url":"/file/copy"}],"resource":"file"}
-//    $a = json_decode($guzzle->post("https://api.aliyundrive.com/adrive/v2/batch", [
-//        'headers' => [
-//            'authorization' => "Bearer {$token_s}",
-//            'X-Canary' => 'client=web,app=share,version=v2.3.1',
-//            'X-Device-Id' => $d,
-//            'X-Share-Token' => $s_token,
-//        ],
-//        'json' => [
-//            'requests' => [
-//                [
-//                    'body' => [
-//                        'file_id' => '6415754230e25a1a3729494bbfc342f970147499',
-//                        'share_id' => '2Sd3Yb4gZAn',
-//                        'auto_rename' => true,
-//                        'to_parent_file_id' => 'root',
-//                        'to_drive_id' => $aaa->resource_drive_id,
-//                    ],
-//                    'headers' => [
-//                        'Content-Type' => 'application/json',
-//                    ],
-//                    'id' => '0',
-//                    'method' => 'POST',
-//                    'url' => '/file/copy',
-//                ],
-//            ],
-//            'resource' => 'file',
-//        ],
-//    ])->getBody()->getContents());
-//    ///adrive/v1.0/openFile/get
-//    ///
-//    $bbb = json_decode($guzzle->post('https://openapi.alipan.com/adrive/v1.0/openFile/get', [
-//        'headers' => [
-//            'authorization' => $token1,
-//        ],
-//        'json' => [
-//            'drive_id' => $aaa->resource_drive_id,
-//            'file_id' => $a->responses[0]->body->file_id,
-//        ],
-//    ])->getBody()->getContents());
-//    $ccc = json_decode($guzzle->post('https://openapi.alipan.com/adrive/v1.0/openFile/getDownloadUrl', [
-//        'headers' => [
-//            'authorization' => $token1,
-//        ],
-//        'json' => [
-//            'drive_id' => $aaa->resource_drive_id,
-//            'file_id' => $a->responses[0]->body->file_id,
-//        ],
-//    ])->getBody()->getContents());
-//    dd($bbb,$ccc);
+    while (true) {
+        $time1->addSeconds(1);
+        $time2->addSeconds(1);
+        $time3 = Carbon\Carbon::create('2023','10','06','21','21','00');
+        $time4 = Carbon\Carbon::create('2023','09','28','07','05','00');
+        if($time1->gt($time2)){
+            $time1 = $time2;
+            $time2 = $time3;
+            $time3 = $time4;
+            $time4 = Carbon\Carbon::now();
+            if($time1->gt($time2)){
+                $time1 = $time2;
+                $time2 = $time3;
+                $time3 = $time4;
+            }
+        }
+    }
 });

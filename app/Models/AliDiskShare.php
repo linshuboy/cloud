@@ -11,6 +11,7 @@ use Microsoft\Graph\Model\OAuth2PermissionGrant;
 /**
  * @property mixed $share_id
  * @property mixed $password
+ * @property mixed $share_token
  */
 class AliDiskShare extends Model
 {

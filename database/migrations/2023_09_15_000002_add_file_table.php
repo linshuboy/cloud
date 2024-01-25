@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('share_id')->default('');
             $table->string('type')->default('');
             $table->string('parent_file_id')->default('');
+            $table->string('temp_file_id')->default('');
             $table->timestamps();
         });
     }

@@ -13,6 +13,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\RateLimitedWithRedis;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Redis;
+use PHPUnit\Exception;
 
 class CreateAliDiskIndex implements ShouldQueue
 {
@@ -38,15 +39,20 @@ class CreateAliDiskIndex implements ShouldQueue
      */
     public function handle(): void
     {
-        Redis::throttle('CreateAliDiskIndex')->allow(1)->every(1)->then(function () {
+        Redis::throttle('CreateAliDiskIndex')->allow(2)->every(1)->then(function () {
             if ($this->batch()->cancelled()) {
                 return;
             }
             try {
                 $list = $this->alidiskShare->getFileListByFileId($this->file_id,$this->marker);
                 file_put_contents(public_path().'/reqs.log','200'.' '.time().PHP_EOL,FILE_APPEND);
-            }catch (ClientException $exception){
-                file_put_contents(public_path().'/reqs.log',$exception->getResponse()->getStatusCode().' '.time().PHP_EOL,FILE_APPEND);
+            }catch (Exception $exception){
+//                检查$exception->getResponse()函数是否存在
+                if (method_exists($exception,'getResponse')){
+                    file_put_contents(public_path().'/reqs.log',$exception->getResponse()->getStatusCode().' '.time().PHP_EOL,FILE_APPEND);
+                }else{
+                    file_put_contents(public_path().'/reqs.log',$exception->getMessage().' '.time().PHP_EOL,FILE_APPEND);
+                }
                 $this->release(1);
                 return;
             }
