@@ -24,7 +24,7 @@ use Illuminate\Http\Request;
 |
 */
 Route::get('/', function () {
-    return view('init');
+
 });
 Route::get('/onedrive/app/callback', [OnedriveController::class, 'appCallback'])->name('onedrive.app.callback');
 Route::get('/onedrive/app/init', [OnedriveController::class, 'initApp'])->name('onedrive.app.init');
